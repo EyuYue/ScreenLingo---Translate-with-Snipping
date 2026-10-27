@@ -1,0 +1,16 @@
+:root { color-scheme: light; --text-background: #fffefb; --text-color: #172125; }
+* { box-sizing: border-box; }
+html, body, #translations { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent !important; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans", "Noto Sans CJK SC", sans-serif; pointer-events: none; user-select: none; }
+#translations { position: relative; isolation: isolate; }
+/* Source masks cover the entire original text, even when the translation is shorter.
+   No radius, shadow, blur or parent opacity: the original must not show through. */
+.translation-mask { position: absolute; z-index: 0; background: var(--text-background); opacity: 1; border: 0; border-radius: 0; box-shadow: none; }
+.translation-block { position: absolute; z-index: 1; background: transparent; color: var(--text-color); overflow: hidden; }
+.translation-text { width: 100%; height: 100%; padding: 0; margin: 0; font-weight: 500; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; overflow: hidden; text-align: start; }
+/* A local overlap can combine text layouts, but it must not create one large
+   opaque rectangle between them. Only the translated lines get extra backing. */
+.translation-ink { background: var(--text-background); color: var(--text-color); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.vertical-rtl { writing-mode: vertical-rl; text-orientation: mixed; line-height: 1.45; }
+.vertical-ltr { writing-mode: vertical-lr; text-orientation: mixed; line-height: 1.45; }
+.overflow-marker { position: absolute; bottom: 0; right: 0; background: #fff0d1; color: #764c1c; font-size: 10px; font-weight: 700; line-height: 12px; padding: 0 3px; border-radius: 2px; }

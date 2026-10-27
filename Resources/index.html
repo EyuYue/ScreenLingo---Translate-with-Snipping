@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>ScreenLingo · 框译</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><span class="brandmark" aria-hidden="true">译</span><div><div class="wordmark">框译 <span>ScreenLingo</span></div><p>by hungryfish</p></div></div>
+    <div class="header-actions"><span class="edition">MAC / OVERLAY</span><button id="back-to-bubble" class="secondary">返回悬浮球</button><button id="pin" class="quiet" title="窗口置顶" aria-pressed="false">置顶</button><button id="settings-open" class="secondary">设置</button></div>
+  </header>
+
+  <section class="control-panel" aria-label="翻译控制">
+    <div class="capture-row">
+      <button id="capture" class="primary large"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5M7 12h10M12 7v10"/></svg>框选翻译 <kbd id="shortcut">⌥⇧T</kbd></button>
+      <button id="capture-fullscreen" class="secondary large" title="截取鼠标所在的整个显示器">整屏翻译 <kbd id="fullscreen-shortcut">⌥T</kbd></button>
+      <button id="open-image" class="secondary large">打开图片</button>
+      <button id="cancel" class="danger" hidden>取消请求</button>
+      <div class="spacer"></div><button id="clear" class="quiet">清空</button>
+    </div>
+    <div class="options-row">
+      <label>原文<select id="source-language"><option>自动识别</option>英语</option><option>日语</option><option>韩语</option><option>简体中文</option><option>繁體中文</option><option>法语</option><option>德语</option><option>西班牙语</option><option>俄语</option><option>阿拉伯语</option></select></label>
+      <span class="arrow" aria-hidden="true">→</span>
+      <label>译文<select id="target-language"><option>简体中文</option><option>繁體中文</option><option>英语</option><option>日语</option><option>韩语</option><option>法语</option><option>德语</option><option>西班牙语</option><option>俄语</option><option>阿拉伯语</option></select></label>
+      <div class="rule"></div>
+      <label class="reading">阅读方向<select id="reading-order"><option value="auto">自动判断 / 混合排版</option><option value="horizontal">横排</option><option value="vertical-rtl">竖排 · 列从右到左</option><option value="vertical-ltr">竖排 · 列从左到右</option></select></label>
+    </div>
+  </section>
+
+  <section id="welcome" class="welcome">
+    <div class="welcome-icon" aria-hidden="true"><span>A</span><span>あ</span><span>文</span></div>
+    <div><h1>这里用于修改原文</h1><p>点击悬浮球框选；也可按整屏快捷键直接屏幕。Esc 取消框选，右键球可清除译文。</p><p id="setup-hint">首次使用：设置 AI 接口，然后允许屏幕录制。</p></div>
+  </section>
+
+  <section id="image-strip" class="image-strip" hidden>
+    <button id="image-preview" class="thumbnail" title="放大截图"><img id="thumbnail" alt="本次截图"></button>
+    <div class="image-info"><strong>本次截图 <span id="image-size"></span></strong><p>竖排请确认列的阅读方向；无需把图片旋转。</p></div>
+    <button id="recognize" class="secondary">识别并翻译</button>
+  </section>
+
+  <section class="editors" aria-label="原文与译文">
+    <article class="editor-card">
+      <div class="editor-title"><h2>识别原文 <span>可编辑</span></h2><span id="detected-language" class="language-tag"></span></div>
+      <textarea id="source-text" aria-label="识别原文，可编辑" placeholder="等待输入" spellcheck="false"></textarea>
+      <div class="editor-footer"><button id="copy-source" class="text-button">复制原文</button><button id="translate-text" class="text-button accent">按修改后原文翻译 →</button></div>
+    </article>
+    <article class="editor-card translation-card">
+      <div class="editor-title"><h2>翻译结果</h2><span id="target-tag" class="language-tag">简体中文</span></div>
+      <textarea id="translated-text" aria-label="翻译结果" placeholder="译文" readonly spellcheck="false"></textarea>
+      <div class="editor-footer"><span id="result-meta">保留段落、公式与数值</span><button id="copy-translation" class="text-button accent">复制译文</button></div>
+    </article>
+  </section>
+  <div id="notes" class="notes" role="note" hidden></div>
+  <div class="status-row"><span id="status-dot" class="dot"></span><p id="status" role="status" aria-live="polite">就绪 · 先在设置中填写 API Key</p></div>
+  <footer><span id="provider-label">OpenAI · gpt-4.1-mini</span><span id="privacy-label">主动截图后发送 · 应用不保存翻译历史</span></footer>
+</div>
+
+<div id="settings-overlay" class="overlay" hidden>
+  <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-header"><div><p class="eyebrow">SCREENLINGO</p><h2 id="settings-title">设置</h2></div><button id="settings-close" class="close" aria-label="关闭设置">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label for="provider">服务商</label><select id="provider"><option value="openai">OpenAI / GPT · Responses API</option><option value="gemini">Google Gemini · Interactions API</option><option value="compatible">其他服务 · OpenAI 兼容接口</option></select></div>
+      <div class="field"><label for="base-url">API 地址 <span>Base URL</span></label><input id="base-url" type="url" autocomplete="off" spellcheck="false" placeholder="https://your-service.example/v1"><p class="field-help" id="endpoint-help">OpenAI 官方接口。请选择可用的图片模型。</p></div>
+      <div class="field"><label for="model">模型 <span>需支持图片输入</span></label><select id="model" aria-describedby="model-help"></select><p id="model-help" class="field-help">选择模型，或选择自定义填写其他名称。</p></div>
+      <div id="custom-model-field" class="field" hidden><label for="custom-model">自定义模型名称</label><input id="custom-model" type="text" autocomplete="off" spellcheck="false" maxlength="160" placeholder="填写服务商提供的模型 ID"></div>
+      <div class="field"><div class="label-row"><label for="api-key">API Key</label><button id="get-key" class="text-button">打开官方 Key 页面 ↗</button></div><input id="api-key" type="password" autocomplete="new-password" spellcheck="false" placeholder="在本机填写，不要发到聊天中"><div class="label-row"><p id="key-hint" class="field-help">仅保存在 macOS 钥匙串，不写入设置文件。</p><button id="delete-key" class="text-button danger-text" hidden>删除已存 Key</button></div></div>
+      <div class="settings-divider"></div>
+      <div class="two-fields"><div class="field"><label for="hotkey">框选翻译快捷键</label><select id="hotkey"><option value="option-shift-t">⌥⇧T · Option + Shift + T</option><option value="control-option-t">⌃⌥T · Control + Option + T</option><option value="command-shift-y">⇧⌘Y · Shift + Command + Y</option></select></div><div class="field permission-field"><label>屏幕录制权限</label><button id="permission" class="secondary" title="查看屏幕录制权限">检查权限…</button></div></div>
+      <div class="field"><label for="fullscreen-hotkey">整屏翻译快捷键</label><select id="fullscreen-hotkey" aria-describedby="fullscreen-hotkey-help"><option value="option-t">⌥T · Option + T（推荐）</option><option value="t">T · 单键（会占用普通 T 输入）</option><option value="control-option-f">⌃⌥F · Control + Option + F</option><option value="disabled">不启用快捷键</option></select><p id="fullscreen-hotkey-help" class="field-help">截取鼠标所在的整块屏幕，不需要拖选。</p></div>
+      <label class="check-row"><input id="auto-translate" type="checkbox"><span>框选或整屏截图后自动发送并翻译<small>关闭后点击悬浮球「发」或工具条「发送」确认；打开图片仍在详情页显示。</small></span></label>
+      <div class="field"><label for="glossary">术语 / 翻译风格 <span>选填</span></label><textarea id="glossary" rows="2" maxlength="3000" placeholder="例如：保留材料名称、公式和缩写；bond dissociation energy 译为键解离能。"></textarea></div>
+      <label class="check-row consent"><input id="consent" type="checkbox"><span>我同意将主动选取的区域、整屏截图或原文发送至下面的 AI 服务；整屏可能包含私人信息。<small id="destination">api.openai.com</small></span></label>
+      <div class="settings-note">此软件使用AI自定义接口。纯文字模型不能直接识别截屏(•́_•̀)。</div>
+      <p id="settings-error" class="settings-error" role="alert" hidden></p>
+    </div>
+    <div class="modal-footer"><button id="uninstall" class="text-button danger-text" title="确认后将当前应用卸载">卸载 ScreenLingo…</button><div class="spacer"></div><button id="settings-save" class="primary">保存设置</button></div>
+  </section>
+</div>
+<div id="preview-overlay" class="overlay preview-overlay" hidden><section class="preview-modal" role="dialog" aria-modal="true" aria-label="截图预览"><div class="preview-header"><span>本次截图 · 本机预览</span><button id="preview-close" class="close" aria-label="关闭预览">×</button></div><div class="full-image"><img id="full-preview" alt="本次截图完整预览"></div></section></div>
+</body>
+</html>
