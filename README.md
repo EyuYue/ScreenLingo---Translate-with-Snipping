@@ -1,6 +1,6 @@
 # ScreenLingo
 
-**框选即译，译文原位显示。** 通过悬浮球或快捷键翻译屏幕上的文字。
+**框选翻译，译文原位显示。** 点击悬浮球或快捷键翻译屏幕上的文字。
 
 **Select, translate, and read in place.** Translate on-screen text with a floating button or keyboard shortcut.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 简体中文
+## 中文
 
 ### 功能
 
