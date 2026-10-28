@@ -1,5 +1,5 @@
 # ScreenLingo
-
+一个非常小的软件，用AI API翻译，我做来用来看漫画的小工具
 **框选翻译，译文原位显示。** 点击悬浮球或快捷键翻译屏幕上的文字。
 
 **Select, translate, and read in place.** Translate on-screen text with a floating button or keyboard shortcut.
